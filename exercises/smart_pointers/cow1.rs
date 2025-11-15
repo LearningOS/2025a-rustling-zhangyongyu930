@@ -21,6 +21,9 @@ fn abs_all<'a, 'b>(input: &'a mut Cow<'b, [i32]>) -> &'a mut Cow<'b, [i32]> {
         let v = input[i];
         if v < 0 {
             // Clones into a vector if not already owned.
+            //
+            // 如果input是Borrowed，那么得到一个新的拷贝，就变成Owned了
+            // 如果input是Owner，那么就得到对应的可变引用
             input.to_mut()[i] = -v;
         }
     }
