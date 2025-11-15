@@ -13,7 +13,7 @@ use std::num::ParseIntError;
 use std::str::FromStr;
 
 #[derive(Debug, PartialEq)]
-struct Person {
+struct Person { 
     name: String,
     age: usize,
 }
@@ -31,7 +31,6 @@ enum ParsePersonError {
     ParseInt(ParseIntError),
 }
 
-// I AM NOT DONE
 
 // Steps:
 // 1. If the length of the provided string is 0, an error should be returned
@@ -52,6 +51,46 @@ enum ParsePersonError {
 impl FromStr for Person {
     type Err = ParsePersonError;
     fn from_str(s: &str) -> Result<Person, Self::Err> {
+        if s.len() == 0 {
+            return Result::Err(ParsePersonError::Empty)
+        }
+
+        let mut str_iter = s.split(',')
+                            .map(|s| s.trim());
+
+        let name = match str_iter.next() {
+            Some(s_name) => {
+                if s_name == "" {
+                    return Result::Err(ParsePersonError::NoName);
+                } else {
+                    s_name.to_string()
+                }
+            },
+            None => {
+                return Result::Err(ParsePersonError::Empty);
+            },
+        };
+
+        let age = match str_iter.next() {
+            Some(s_age) => {
+                let age = s_age.parse::<usize>();
+                match age {
+                    Ok(age) => age,
+                    Err(err) => {
+                        return Result::Err(ParsePersonError::ParseInt(err));
+                    },
+                }
+            },
+            None => {
+                return Result::Err(ParsePersonError::BadLen);
+            },
+        };
+
+        if let Some(wrong) = str_iter.next() {
+            return Result::Err(ParsePersonError::BadLen);
+        }
+
+        Ok(Person{ name, age })
     }
 }
 

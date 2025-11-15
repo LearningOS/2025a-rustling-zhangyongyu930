@@ -40,10 +40,41 @@ impl Default for Person {
 // If while parsing the age, something goes wrong, then return the default of
 // Person Otherwise, then return an instantiated Person object with the results
 
-// I AM NOT DONE
 
 impl From<&str> for Person {
     fn from(s: &str) -> Person {
+        let mut data = s.split(',');
+
+        let name_opt = data.next();
+
+        if name_opt == None {
+            return Person::default();
+        }
+
+        let name = name_opt.unwrap().to_string();
+
+        if name == "" {
+            return Person::default();
+        }
+
+        let age_opt = data.next();
+
+        if age_opt == None {
+            return Person::default();
+        }
+
+        let age = age_opt.unwrap().parse::<usize>();
+
+        if let Err(err) = age {
+            return Person::default()
+        }
+
+        let age_new = age.unwrap();
+
+        match data.next() {
+            None => Person {name, age: age_new},
+            _ => Person::default(),
+        }
     }
 }
 
