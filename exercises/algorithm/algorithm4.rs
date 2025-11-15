@@ -3,7 +3,7 @@
 	This problem requires you to implement a basic interface for a binary tree
 */
 
-//I AM NOT DONE
+
 use std::cmp::Ordering;
 use std::fmt::Debug;
 
@@ -51,12 +51,62 @@ where
     // Insert a value into the BST
     fn insert(&mut self, value: T) {
         //TODO
+        match &mut self.root {
+            None => {
+                self.root = Some(Box::new(TreeNode::<T>::new(value)));
+            },
+            Some(box_ref) => {
+                let mut traverse: &mut TreeNode<T> = box_ref;
+                loop{
+                     if value == traverse.value {
+                        return ;
+                    } else if value < traverse.value {
+                        if traverse.left.is_none() {
+                            traverse.left = Some(Box::new(TreeNode::<T>::new(value)));
+                            break;
+                        } else {
+                            traverse = traverse.left.as_mut().unwrap();
+                        }
+                    } else {
+                        if traverse.right.is_none() {
+                            traverse.right = Some(Box::new(TreeNode::<T>::new(value)));
+                            break;
+                        } else {
+                            traverse = traverse.right.as_mut().unwrap();
+                        }
+                    }
+                }
+            }
+        };
     }
 
     // Search for a value in the BST
     fn search(&self, value: T) -> bool {
-        //TODO
-        true
+        match &self.root {
+            None => {
+                false
+            },
+            Some(box_ref) => {
+                let mut traverse: &TreeNode<T> = box_ref;
+                loop {
+                    if traverse.value == value {
+                        return true
+                    } else if traverse.value > value {
+                        if traverse.left.is_none() {
+                            return false;
+                        } else {
+                            traverse = traverse.left.as_ref().unwrap();
+                        }
+                    } else {
+                        if traverse.right.is_none() {
+                            return false;
+                        } else {
+                            traverse = traverse.right.as_ref().unwrap();
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

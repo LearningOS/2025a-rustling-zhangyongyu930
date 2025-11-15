@@ -2,7 +2,7 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
+
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -70,12 +70,72 @@ impl<T> LinkedList<T> {
         }
     }
 	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
+    where T: std::cmp::PartialOrd
 	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+        if list_a.length == 0 {
+            return list_b;
+        } else if list_b.length == 0 {
+            return list_a;
+        } else {
+            // here both list_a and list_b should be non-empty
+            let mut result = Self::new();
+            let mut list_a_ptr_opt = list_a.start;
+            let mut list_b_ptr_opt = list_b.start;
+            let mut list_a_ptr = list_a_ptr_opt.unwrap().as_ptr();
+            let mut list_b_ptr = list_b_ptr_opt.unwrap().as_ptr();
+            unsafe {
+                if (*list_a_ptr).val <= (*list_b_ptr).val {
+                    result.start = list_a_ptr_opt; 
+                    result.end = list_a_ptr_opt;
+                    list_a_ptr_opt = (*list_a_ptr).next;
+                } else {
+                    result.start = list_b_ptr_opt;
+                    result.end = list_b_ptr_opt;
+                    list_b_ptr_opt = (*list_b_ptr).next;
+                }
+            }
+            result.length += 1;
+            loop {
+                if list_a_ptr_opt == None {
+                    if list_b_ptr_opt == None {
+                        break;
+                    } else { // here only list_b has elements
+                        unsafe{
+                            list_b_ptr = list_b_ptr_opt.unwrap().as_ptr();
+                            (*result.end.unwrap().as_ptr()).next = list_b_ptr_opt;
+                            result.end = list_b_ptr_opt;
+                            list_b_ptr_opt = (*list_b_ptr).next;
+                        }
+                    }
+                } else if list_b_ptr_opt == None {
+                    if list_a_ptr_opt == None {
+                        break;
+                    } else { // here only list_a has elements
+                        unsafe{
+                            list_a_ptr = list_a_ptr_opt.unwrap().as_ptr();
+                            (*result.end.unwrap().as_ptr()).next = list_a_ptr_opt;
+                            result.end = list_a_ptr_opt;
+                            list_a_ptr_opt = (*list_a_ptr).next;
+                        }
+                    }
+                } else {
+                    list_a_ptr = list_a_ptr_opt.unwrap().as_ptr();
+                    list_b_ptr = list_b_ptr_opt.unwrap().as_ptr();
+                    unsafe{
+                        if (*list_a_ptr).val <= (*list_b_ptr).val {
+                            (*result.end.unwrap().as_ptr()).next = list_a_ptr_opt;
+                            result.end = list_a_ptr_opt;
+                            list_a_ptr_opt = (*list_a_ptr).next;
+                        } else {
+                            (*result.end.unwrap().as_ptr()).next = list_b_ptr_opt;
+                            result.end = list_b_ptr_opt;
+                            list_b_ptr_opt = (*list_b_ptr).next;
+                        }
+                    }
+                }
+                result.length += 1;
+            }
+            result
         }
 	}
 }

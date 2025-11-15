@@ -2,7 +2,6 @@
 	double linked list reverse
 	This problem requires you to reverse a doubly linked list
 */
-// I AM NOT DONE
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -74,6 +73,40 @@ impl<T> LinkedList<T> {
     }
 	pub fn reverse(&mut self){
 		// TODO
+        if self.length != 0 {
+            // create the pointer we need
+            let mut start_tmp_ptr_opt = self.end; 
+            let mut end_tmp_ptr_opt = self.end;
+            let mut trav_ptr_opt = self.end;
+            // get the true pointer we need
+            let mut end_tmp_ptr = end_tmp_ptr_opt.unwrap().as_ptr();
+            let mut trav_ptr = trav_ptr_opt.unwrap().as_ptr();
+            unsafe {
+                trav_ptr_opt = (*trav_ptr).prev;
+                (*end_tmp_ptr).prev = None;
+            }
+            loop {
+                if trav_ptr_opt == None {
+                    break;
+                } else {
+                    end_tmp_ptr = end_tmp_ptr_opt.unwrap().as_ptr();
+                    trav_ptr = trav_ptr_opt.unwrap().as_ptr();
+                    unsafe {
+                        (*end_tmp_ptr).next = trav_ptr_opt;
+                        trav_ptr_opt = (*trav_ptr).prev;
+                        (*trav_ptr).prev = end_tmp_ptr_opt;
+                        end_tmp_ptr_opt = (*end_tmp_ptr).next;
+                        println!("Hello");
+                    }
+                }
+            }
+            unsafe{
+                end_tmp_ptr = end_tmp_ptr_opt.unwrap().as_ptr();
+                (*end_tmp_ptr).next = None;
+            }
+            self.start = start_tmp_ptr_opt;
+            self.end = end_tmp_ptr_opt;
+        }
 	}
 }
 
