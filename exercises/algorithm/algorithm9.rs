@@ -2,7 +2,6 @@
 	heap
 	This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -38,6 +37,24 @@ where
 
     pub fn add(&mut self, value: T) {
         //TODO
+        self.count += 1;
+        let mut traverse = self.count;
+        self.items.push(value);
+        loop {
+            if traverse == 1 {
+                break;
+            } else {
+                let parent_index = self.parent_idx(traverse);
+                let current: &T = self.items.get(traverse).unwrap();
+                let parent: &T = self.items.get(parent_index).unwrap();
+                if (self.comparator)(current, parent) {
+                    self.items.swap(traverse, parent_index);
+                    traverse = parent_index;
+                } else {
+                    break;
+                }
+            }
+        };
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -84,8 +101,59 @@ where
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+        if self.count == 0 {
+            return None;
+        } else {
+            self.items.swap(1, self.count);
+            let result = self.items.pop();
+            self.count -= 1;
+            if self.count == 0 {
+                return result;
+            }
+            let mut traverse = 1;
+            loop {
+                if self.children_present(traverse) {
+                    if self.right_child_idx(traverse) > self.count {
+                        let current: & T = self.items.get(traverse).unwrap();
+                        let left_child_index = self.left_child_idx(traverse);
+                        let left_child: & T = self.items
+                                                     .get(left_child_index).unwrap();
+                        if (self.comparator)(current, left_child) {
+                            break;
+                        } else {
+                            self.items.swap(traverse, left_child_index);
+                            traverse = left_child_index;
+                        }
+                    } else {
+                        let current: & T = self.items.get(traverse).unwrap();
+                        let left_child_index = self.left_child_idx(traverse);
+                        let right_child_index = self.right_child_idx(traverse);
+                        let left_child: & T = self.items
+                                                     .get(left_child_index).unwrap();
+                        let right_child: & T = self.items
+                                                     .get(right_child_index).unwrap();
+                        if (self.comparator)(left_child, right_child) {
+                            if (self.comparator)(current, left_child) {
+                                break;
+                            } else {
+                                self.items.swap(traverse, left_child_index);
+                                traverse = left_child_index;
+                            }
+                        } else {
+                            if (self.comparator)(current, right_child) {
+                                break;
+                            } else {
+                                self.items.swap(traverse, right_child_index);
+                                traverse = right_child_index;
+                            }
+                        }
+                    }
+                } else {
+                    break;
+                }
+            }
+            result
+        }
     }
 }
 
